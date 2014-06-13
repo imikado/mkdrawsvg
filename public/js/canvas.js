@@ -36,18 +36,12 @@ Canvas.prototype={
 		//this.ctx.clearRect(0, 0, this.width, this.height);
 	},
 	clearRect: function(x,y,width,height){
-		this.ctx.clearRect(x, y,  width, height);
+		return;
 	},
-	circle: function(p,r){
-		x = p.x*this.width;
-		y = p.y*this.height;
-		//this.ctx.save();
-		this.ctx.beginPath();
-		this.ctx.strokeStyle = this.stroke_color;
-		this.ctx.moveTo(x+r,y);
-		this.ctx.arc(x,y,r,0,TWO_PI,false);
-		this.ctx.fill();
-		//this.ctx.restore();
+	circle: function(x,y,width,lineWidth,strokeStyle,fill){
+		
+		var sSvg='<circle cx="'+x+'" cy="'+y+'" r="'+width+'" stroke="'+strokeStyle+'" stroke-width="'+lineWidth+'" fill="'+fill+'" />';
+		this.addObject(sSvg);
 	},
 	line: function(x1,y1,x2,y2,color,border){
 		
@@ -236,15 +230,13 @@ Canvas.prototype={
 	},
 	arrow: function(x1,y1,x2,y2,strokeStyle,lineWidth){
 		
-		this.ctx.beginPath();
-		this.ctx.lineWidth=lineWidth;
-		this.ctx.strokeStyle = strokeStyle;
-		this.ctx.moveTo(x1,y1);
-		this.ctx.lineTo(x2,y2);
+		var sSvg='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" style="stroke:'+strokeStyle+';stroke-width:'+lineWidth+'" />';
+		//sSvg+='<rect class="chartRect" id="rect'+x2+''+y2+'" x="'+(x2-3)+'" y="'+(y2-3)+'" width="6" height="6" style="fill:'+strokeStyle+'"></rect>';
+		sSvg+='<circle cx="'+x2+'" cy="'+y2+'" r="3" stroke="'+strokeStyle+'" stroke-width="'+lineWidth+'" fill="'+strokeStyle+'" />';
 		
-		this.ctx.stroke();
+		this.addObject(sSvg);
 		
-		this.fillRect(x2-3,y2-3,6,6,strokeStyle);
+		
 	}
 	,
 	drawRect : function(x,y,ilargeur,ihauteur,lineWidth,strokeStyle,fillStyle){
@@ -310,98 +302,7 @@ Canvas.prototype={
 		
 		
 		this.addObject(sSvg);
-		return;
 		
-		this.ctx.lineWidth=lineWidth;
-		this.ctx.strokeStyle=strokeStyle;
-		this.ctx.fillStyle=fillStyle;
-		
-		var hauteurEllipse=10;
-		 
-		//this.line(x,y,x,y+ihauteur);
-		//this.line(x+ilargeur,y,x+ilargeur,y+ihauteur);
-				
-		var centerX=x+(ilargeur/2);
-		var centerY=y;
-		
-		var width=ilargeur;
-		var height=5;
-		
-		x=parseFloat(x);
-		y=parseFloat(y);
-		ilargeur=parseFloat(ilargeur);
-		ihauteur=parseFloat(ihauteur);
-				
-		//fond
-		this.ctx.beginPath();
-		
-			this.ctx.moveTo(x,y);
-			this.ctx.bezierCurveTo(
-							x,y-hauteurEllipse,
-							x+ilargeur,y-hauteurEllipse,
-							x+ilargeur,y
-			);
-									
-			this.ctx.moveTo(x+ilargeur,y);
-			this.ctx.lineTo(x+ilargeur,y+ihauteur);
-			
-			this.ctx.moveTo(x,y);
-			this.ctx.lineTo(x,y+ihauteur);
-			
-			this.ctx.moveTo(x+ilargeur,y);
-			this.ctx.lineTo(x+ilargeur,y+ihauteur);
-			
-			this.ctx.moveTo(x+ilargeur,y+ihauteur	);
-			this.ctx.bezierCurveTo(
-							x+ilargeur,y+ihauteur+hauteurEllipse,
-							x,y+hauteurEllipse+ihauteur,
-							x,y+ihauteur
-			);					
-								
-			this.ctx.moveTo(x,y+ihauteur);
-									
-			this.ctx.lineTo(x,y+ihauteur);
-			this.ctx.moveTo(x,y);
-		
-			this.ctx.fillRect(x,y,ilargeur,ihauteur);
-			
-			this.ctx.fill();
-		
-		this.ctx.closePath();
-		
-		//trait
-		
-		this.ctx.beginPath();
-			this.ctx.moveTo(x,y);
-			this.ctx.bezierCurveTo(
-									x,y+hauteurEllipse,
-									x+ilargeur,y+hauteurEllipse,
-									x+ilargeur,y
-									);
-			this.ctx.moveTo(x,y);
-			this.ctx.bezierCurveTo(
-									x,y-hauteurEllipse,
-									x+ilargeur,y-hauteurEllipse,
-									x+ilargeur,y
-									);
-			
-			this.ctx.moveTo(x,y+ihauteur);
-			this.ctx.bezierCurveTo(
-									x,y+hauteurEllipse+ihauteur,
-									x+ilargeur,y+hauteurEllipse+ihauteur,
-									x+ilargeur,y+ihauteur
-									);
-									
-			this.ctx.moveTo(x,y);
-			this.ctx.lineTo(x,y+ihauteur);
-			
-			this.ctx.moveTo(x+ilargeur,y);
-			this.ctx.lineTo(x+ilargeur,y+ihauteur);
-			
-			this.ctx.stroke();
-		
-		this.ctx.closePath();
- 		
  		
 		  
  	}
@@ -417,47 +318,28 @@ Canvas.prototype={
 		
 		this.addObject(sSvg);
 		
-		return;
-		
-		this.ctx.font=size+"px Arial";
-		this.ctx.textBaseline = 'top';
-		this.ctx.fillStyle=couleur;
-		this.ctx.fillText(texte,x,y);
+	}
+	,
+	drawPolygon:function(sPoints,lineWidth,strokeStyle,fillStyle){
+		var sSvg='<polygon points="'+sPoints+'" style="fill:'+fillStyle+';stroke:'+strokeStyle+';stroke-width:'+lineWidth+'" />';
+		this.addObject(sSvg);
 	}
 	,
 	drawLosange: function (x,y,ilargeur,ihauteur,lineWidth,strokeStyle,fillStyle) {
-
-		// fond='#222222';
-
-		this.ctx.lineWidth=lineWidth;
 		
-		this.ctx.beginPath();
-		this.ctx.moveTo(x,y+(ihauteur/2) );
+		var sPoints='';
+		
+		sPoints+=' '+(x+(ilargeur/2))+','+y;
+		
+		sPoints+=' '+(x+(ilargeur/1))+','+(y+(ihauteur/2));
+		
+		sPoints+=' '+(x+(ilargeur/2))+','+(y+(ihauteur/1));
+		
+		sPoints+=' '+(x)+','+(y+(ihauteur/2));
+		
+		
+		this.drawPolygon(sPoints,lineWidth,strokeStyle,fillStyle);
 
-		//_context.closePath();
-		this.ctx.lineTo(x+(ilargeur/2),y);
-		this.ctx.lineTo(x+(ilargeur/1),y+(ihauteur/2));
-		this.ctx.lineTo(x+(ilargeur/2),y+(ihauteur/1));
-		this.ctx.lineTo(x,y+(ihauteur/2));
-
-
-		this.ctx.strokeStyle = strokeStyle;
-		this.ctx.stroke();
-
-		this.ctx.fillStyle=fillStyle;
-		this.ctx.fill();
-
-		this.ctx.closePath();
-
-
-	}
-	,
-	drawImage: function (img,x,y,width,height){
-		this.ctx.drawImage(img,x,y ,width,height  );
-	}
-	,
-	drawImage2: function (img,x,y,width,height,x2,y2,width2,height2){
-		this.ctx.drawImage(img,x,y ,width,height,x2,y2,width2,height2  );
 	}
 	,
 	isInThisLosange: function(x,y){
