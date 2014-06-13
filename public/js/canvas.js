@@ -57,6 +57,12 @@ Canvas.prototype={
 		
 	}
 	,
+	multiline:function(sPoints,color,border){
+		var sSvg='<polyline points="'+sPoints+'"  style="fill:white;stroke:'+color+';stroke-width:'+border+'" />';
+		
+		this.addObject(sSvg);
+	}
+	,
 	getXByPosition:function(object,position){
 		var x1;
 		var y1;
@@ -137,6 +143,8 @@ Canvas.prototype={
 		var x2=this.getXByPosition(oTo,toPosition);
 		var y2=this.getYByPosition(oTo,toPosition);
 		
+		var sPoints=x1+','+y1;
+		
 		if(
 				(fromPosition.indexOf('right')>-1 && toPosition.indexOf('top')>-1 )
 				||
@@ -149,22 +157,22 @@ Canvas.prototype={
 				
 		){
 			console.log('cas 1');
-			this.line(x1,y1,x2,y1,color,border);
-			this.line(x2,y1,x2,y2,color,border);
 			
+			sPoints+=' '+x2+','+y1;
+			sPoints+=' '+x2+','+y2;			
 			 
-			
 		}else{
 			console.log('cas 2');
 			//calcul centre
 			var xCenter=x1+((x2-x1)/2);
 			
-			this.line(x1,y1,xCenter,y1,color,border);
-			this.line(xCenter,y1,xCenter,y2,color,border);
-			this.line(xCenter,y2,x2,y2,color,border);
-
+			sPoints+=' '+xCenter+','+y1;
+			sPoints+=' '+xCenter+','+y2;
+			sPoints+=' '+x2+','+y2;
 			
 		}
+		
+		this.multiline(sPoints,color,border);
 		
 	},
 	linkPoint:function(oFrom,oTo,fromPosition,toPosition,sPoints,color,border){
@@ -175,10 +183,7 @@ Canvas.prototype={
 		var x2=this.getXByPosition(oTo,toPosition);
 		var y2=this.getYByPosition(oTo,toPosition);
 		
-		this.ctx.beginPath();
-		this.ctx.lineWidth=border;
-		this.ctx.strokeStyle = color;
-		this.ctx.moveTo(x1,y1);
+		var sPoints=x1+','+y1;
 		
 		if(sPoints!=''){
 			
@@ -188,13 +193,15 @@ Canvas.prototype={
 				var xPoint=tPoint[0];
 				var yPoint=tPoint[1];
 				
-				this.ctx.lineTo(xPoint,yPoint);
+				sPoints+=' '+xPoint+','+yPoint;
 			}
 			
 		}
+		sPoints+=' '+x2+','+y2;
 		
-		this.ctx.lineTo(x2,y2);
-		this.ctx.stroke();
+		this.multiline(sPoints,color,border);
+		
+		
 	},
 	linkPointWithSelected:function(oFrom,oTo,fromPosition,toPosition,sPoints,iSelectedPointId,color,border){
 		
@@ -204,11 +211,7 @@ Canvas.prototype={
 		var x2=this.getXByPosition(oTo,toPosition);
 		var y2=this.getYByPosition(oTo,toPosition);
 		
-		this.ctx.beginPath();
-		this.ctx.lineWidth=border;
-		this.ctx.strokeStyle = color;
-		this.ctx.moveTo(x1,y1);
-		
+		var sPoints=x1+','+y1;
 		if(sPoints!=''){
 			
 			var tPoints=sPoints.split(';');
@@ -217,18 +220,19 @@ Canvas.prototype={
 				var xPoint=tPoint[0];
 				var yPoint=tPoint[1];
 				
-				this.ctx.lineTo(xPoint,yPoint);
+				sPoints+=' '+xPoint+','+yPoint;
 				
 				if(i==iSelectedPointId){
-					this.ctx.fillRect(xPoint-5,yPoint-5,10,10,'#880000');
+					this.fillRect(xPoint-5,yPoint-5,10,10,'#880000');
 					
 				}
 			}
 			
 		}
 		
-		this.ctx.lineTo(x2,y2);
-		this.ctx.stroke();
+		sPoints+=' '+x2+','+y2;
+		this.multiline(sPoints,color,border);
+		
 	},
 	arrow: function(x1,y1,x2,y2,strokeStyle,lineWidth){
 		
@@ -286,7 +290,7 @@ Canvas.prototype={
 		
 	},
 	drawRectStroke : function(x,y,ilargeur,ihauteur,contour,width){
-
+		console.log('draw rect str');
 
 		var sSvg='<rect class="chartRect" id="rect'+x+''+y+'" x="'+x+'" y="'+y+'" width="'+ilargeur+'" height="'+ihauteur+'" style="stroke-width:'+width+';stroke:'+contour+'"></rect>';
 			

@@ -167,7 +167,7 @@ function save(){
 <div id="formEdit"></div>
 </div>
 
-<canvas id="canvas_tmp" class="canvas" width="900px" height="800px"  onclick="oApplication.click(event)" onmousemove="oApplication.mousemove(event)"></canvas>
+<div style="position:absolute;width:900px;height:800px" id="canvas_tmp" class="canvas" onClick="oApplication.click(event)" onmousemove="oApplication.mousemove(event)"></div>
 
 <div id="tInfo"></div>
 

@@ -428,7 +428,7 @@ Application.prototype={
 	click:function(e){
 		var x=this.getXmouse(e);
 		var y=this.getYmouse(e);
-			
+			console.log('clic');
 		this.draw(x,y);
 		
 		
