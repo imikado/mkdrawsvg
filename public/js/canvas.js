@@ -1,28 +1,45 @@
 //CANVAS
 function Canvas(id){
-    this.canvas = document.getElementById(id);
-    if(!this.canvas){
-		alert('cannot find "'+id+'"');
-	}
+   // this.canvas = document.getElementById(id);
+    //if(!this.canvas){
+	//	alert('cannot find "'+id+'"');
+	//}
 	 
     //this.ctx = this.canvas.getContext('2d');
     this.width = 900;
     this.height = 800;
     this.fill_color = "#FFF";
     this.stroke_color = "#000";
+    
+    this.sObject=''
+    this.visible=1;
 }
 Canvas.prototype={
 	
 	addObject:function(sObject){
+		
+		this.sObject+=sObject;
+		
 		var sSvg='<svg style="position:absolute;" width="'+this.width+'px" height="'+this.height+'px">  ';
 		
-		sSvg+=sObject;
+		var tCanvas=getById('tCanvas');
+		if(tCanvas){
+			
+			for(var i=1;i<oApplication.idLayer;i++){
+				
+				if(oApplication.tLayer[i].visible){
+					sSvg+=oApplication.tLayer[i].sObject;
+				}
+			}
+			
+		}
+		
 		
 		sSvg+='</svg>';
 		
-		var sPrevious=this.canvas.innerHTML;
+		tCanvas.innerHTML=sSvg;
 		
-		this.canvas.innerHTML=sPrevious+sSvg;
+		 
 	},
 	
 	isInside: function(pos) {
@@ -31,7 +48,8 @@ Canvas.prototype={
 	},
 
 	clear: function(){
-		this.canvas.innerHTML='';
+		//this.canvas.innerHTML='';
+		this.sObject='';
 		
 		//this.ctx.clearRect(0, 0, this.width, this.height);
 	},
@@ -40,19 +58,19 @@ Canvas.prototype={
 	},
 	circle: function(x,y,width,lineWidth,strokeStyle,fill){
 		
-		var sSvg='<circle cx="'+x+'" cy="'+y+'" r="'+width+'" stroke="'+strokeStyle+'" stroke-width="'+lineWidth+'" fill="'+fill+'" />';
+		var sSvg='<circle  onclick="oApplication.selectObject('+oApplication.dataIdDrawed+')"  cx="'+x+'" cy="'+y+'" r="'+width+'" stroke="'+strokeStyle+'" stroke-width="'+lineWidth+'" fill="'+fill+'" />';
 		this.addObject(sSvg);
 	},
 	line: function(x1,y1,x2,y2,color,border){
 		
-		var sSvg='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" style="stroke:'+color+';stroke-width:'+border+'" />';
+		var sSvg='<line  onclick="oApplication.selectObject('+oApplication.dataIdDrawed+')"  x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" style="cursor:pointer;stroke:'+color+';stroke-width:'+border+'" />';
 		
 		this.addObject(sSvg);
 		
 	}
 	,
 	multiline:function(sPoints,color,border){
-		var sSvg='<polyline points="'+sPoints+'"  style="fill:white;stroke:'+color+';stroke-width:'+border+'" />';
+		var sSvg='<polyline  onclick="oApplication.selectObject('+oApplication.dataIdDrawed+')"  points="'+sPoints+'"  style="cursor:pointer;fill:none;stroke:'+color+';stroke-width:'+border+'" />';
 		
 		this.addObject(sSvg);
 	}
@@ -89,7 +107,7 @@ Canvas.prototype={
 			y1=object.y+(object.height);
 		}
 		
-		console.log(object.x+' :'+x1);
+		//console.log(object.x+' :'+x1);
 		
 		return x1;
 	}
@@ -137,7 +155,7 @@ Canvas.prototype={
 		var x2=this.getXByPosition(oTo,toPosition);
 		var y2=this.getYByPosition(oTo,toPosition);
 		
-		var sPoints=x1+','+y1;
+		var sPointsLine=x1+','+y1;
 		
 		if(
 				(fromPosition.indexOf('right')>-1 && toPosition.indexOf('top')>-1 )
@@ -150,23 +168,23 @@ Canvas.prototype={
 				
 				
 		){
-			console.log('cas 1');
+			//console.log('cas 1');
 			
-			sPoints+=' '+x2+','+y1;
-			sPoints+=' '+x2+','+y2;			
+			sPointsLine+=' '+x2+','+y1;
+			sPointsLine+=' '+x2+','+y2;			
 			 
 		}else{
-			console.log('cas 2');
+			//console.log('cas 2');
 			//calcul centre
 			var xCenter=x1+((x2-x1)/2);
 			
-			sPoints+=' '+xCenter+','+y1;
-			sPoints+=' '+xCenter+','+y2;
-			sPoints+=' '+x2+','+y2;
+			sPointsLine+=' '+xCenter+','+y1;
+			sPointsLine+=' '+xCenter+','+y2;
+			sPointsLine+=' '+x2+','+y2;
 			
 		}
-		
-		this.multiline(sPoints,color,border);
+		console.log('186:'+sPointsLine);
+		this.multiline(sPointsLine,color,border);
 		
 	},
 	linkPoint:function(oFrom,oTo,fromPosition,toPosition,sPoints,color,border){
@@ -177,7 +195,7 @@ Canvas.prototype={
 		var x2=this.getXByPosition(oTo,toPosition);
 		var y2=this.getYByPosition(oTo,toPosition);
 		
-		var sPoints=x1+','+y1;
+		var sPointsLine=x1+','+y1;
 		
 		if(sPoints!=''){
 			
@@ -187,13 +205,13 @@ Canvas.prototype={
 				var xPoint=tPoint[0];
 				var yPoint=tPoint[1];
 				
-				sPoints+=' '+xPoint+','+yPoint;
+				sPointsLine+=' '+xPoint+','+yPoint;
 			}
 			
 		}
-		sPoints+=' '+x2+','+y2;
-		
-		this.multiline(sPoints,color,border);
+		sPointsLine+=' '+x2+','+y2;
+		console.log('213:'+sPointsLine);
+		this.multiline(sPointsLine,color,border);
 		
 		
 	},
@@ -205,7 +223,7 @@ Canvas.prototype={
 		var x2=this.getXByPosition(oTo,toPosition);
 		var y2=this.getYByPosition(oTo,toPosition);
 		
-		var sPoints=x1+','+y1;
+		var sPointsLine=x1+','+y1;
 		if(sPoints!=''){
 			
 			var tPoints=sPoints.split(';');
@@ -214,7 +232,7 @@ Canvas.prototype={
 				var xPoint=tPoint[0];
 				var yPoint=tPoint[1];
 				
-				sPoints+=' '+xPoint+','+yPoint;
+				sPointsLine+=' '+xPoint+','+yPoint;
 				
 				if(i==iSelectedPointId){
 					this.fillRect(xPoint-5,yPoint-5,10,10,'#880000');
@@ -224,13 +242,14 @@ Canvas.prototype={
 			
 		}
 		
-		sPoints+=' '+x2+','+y2;
-		this.multiline(sPoints,color,border);
+		sPointsLine+=' '+x2+','+y2;
+		console.log('246:'+sPointsLine);
+		this.multiline(sPointsLine,color,border);
 		
 	},
 	arrow: function(x1,y1,x2,y2,strokeStyle,lineWidth){
 		
-		var sSvg='<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" style="stroke:'+strokeStyle+';stroke-width:'+lineWidth+'" />';
+		var sSvg='<line  onclick="oApplication.selectObject('+oApplication.dataIdDrawed+')"  x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" style="stroke:'+strokeStyle+';stroke-width:'+lineWidth+'" />';
 		//sSvg+='<rect class="chartRect" id="rect'+x2+''+y2+'" x="'+(x2-3)+'" y="'+(y2-3)+'" width="6" height="6" style="fill:'+strokeStyle+'"></rect>';
 		sSvg+='<circle cx="'+x2+'" cy="'+y2+'" r="3" stroke="'+strokeStyle+'" stroke-width="'+lineWidth+'" fill="'+strokeStyle+'" />';
 		
@@ -241,7 +260,7 @@ Canvas.prototype={
 	,
 	drawRect : function(x,y,ilargeur,ihauteur,lineWidth,strokeStyle,fillStyle){
 
-		var sSvg='<rect class="chartRect" id="rect'+x+''+y+'" x="'+x+'" y="'+y+'" width="'+ilargeur+'" height="'+ihauteur+'" style="fill:'+fillStyle+';stroke-width:'+lineWidth+';stroke:'+strokeStyle+'"></rect>';
+		var sSvg='<rect onclick="oApplication.selectObject('+oApplication.dataIdDrawed+');return false;" class="chartRect" id="rect'+x+''+y+'" x="'+x+'" y="'+y+'" width="'+ilargeur+'" height="'+ihauteur+'" style="cursor:pointer;fill:'+fillStyle+';stroke-width:'+lineWidth+';stroke:'+strokeStyle+'"></rect>';
 			
 		this.addObject(sSvg);
 
@@ -249,7 +268,7 @@ Canvas.prototype={
 	},
 	fillRect : function(x,y,ilargeur,ihauteur,fond){
 
-		var sSvg='<rect class="chartRect" id="rect'+x+''+y+'" x="'+x+'" y="'+y+'" width="'+ilargeur+'" height="'+ihauteur+'" style="fill:'+fond+'"></rect>';
+		var sSvg='<rect onclick="oApplication.selectObject('+oApplication.dataIdDrawed+');return false;" class="chartRect" id="rect'+x+''+y+'" x="'+x+'" y="'+y+'" width="'+ilargeur+'" height="'+ihauteur+'" style="cursor:pointer;fill:'+fond+'"></rect>';
 			
 		this.addObject(sSvg);
 
@@ -282,7 +301,7 @@ Canvas.prototype={
 		
 	},
 	drawRectStroke : function(x,y,ilargeur,ihauteur,contour,width){
-		console.log('draw rect str');
+		//console.log('draw rect str');
 
 		var sSvg='<rect class="chartRect" id="rect'+x+''+y+'" x="'+x+'" y="'+y+'" width="'+ilargeur+'" height="'+ihauteur+'" style="stroke-width:'+width+';stroke:'+contour+'"></rect>';
 			
@@ -293,10 +312,11 @@ Canvas.prototype={
 	drawBdd:function(x,y,ilargeur,ihauteur,lineWidth,strokeStyle,fillStyle){
 		
 		
-		var sSvg=''; 
-		sSvg+='<rect class="chartRect" id="rect'+x+''+y+'" x="'+x+'" y="'+y+'" width="'+ilargeur+'" height="'+ihauteur+'" style="fill:'+fillStyle+';stroke-width:'+lineWidth+';stroke:'+strokeStyle+'"></rect>';
+		var sSvg='<g onclick="oApplication.selectObject('+oApplication.dataIdDrawed+')" style="cursor:pointer;">'; 
+		sSvg+='<rect id="rect'+x+''+y+'" x="'+x+'" y="'+y+'" width="'+ilargeur+'" height="'+ihauteur+'" style="fill:'+fillStyle+';stroke-width:'+lineWidth+';stroke:'+strokeStyle+'"></rect>';
 		sSvg+='<ellipse cx="'+(x+(ilargeur/2))+'" cy="'+y+'" rx="'+ilargeur/2+'" ry="10" style="fill:'+fillStyle+';stroke:'+strokeStyle+';stroke-width:'+lineWidth+'" />';
 		sSvg+='<ellipse cx="'+(x+(ilargeur/2))+'" cy="'+(y+ihauteur)+'" rx="'+ilargeur/2+'" ry="10" style="fill:'+fillStyle+';stroke:'+strokeStyle+';stroke-width:'+lineWidth+'" />';
+		sSvg+='</g>';
 		
 		
 		
@@ -309,7 +329,7 @@ Canvas.prototype={
 	
 	,
 	fillText:function(x,y,texte,couleur,size){
-		console.log('txt:'+couleur);
+		//console.log('txt:'+couleur);
 		if(!couleur){
 			couleur='#000000';
 		}
@@ -321,7 +341,7 @@ Canvas.prototype={
 	}
 	,
 	drawPolygon:function(sPoints,lineWidth,strokeStyle,fillStyle){
-		var sSvg='<polygon points="'+sPoints+'" style="fill:'+fillStyle+';stroke:'+strokeStyle+';stroke-width:'+lineWidth+'" />';
+		var sSvg='<polygon  onclick="oApplication.selectObject('+oApplication.dataIdDrawed+')"  points="'+sPoints+'" style="fill:'+fillStyle+';stroke:'+strokeStyle+';stroke-width:'+lineWidth+'" />';
 		this.addObject(sSvg);
 	}
 	,

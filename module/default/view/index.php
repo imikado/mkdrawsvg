@@ -129,6 +129,8 @@ function loadSave(){
 	if(c){
 		c.value=stMenuLayerObject;
 	}
+	
+	oApplication.buildLayers();
 }
 function save(){
 	
@@ -140,7 +142,7 @@ function save(){
 	}
 }
 </script>
-<div id="tCanvas">
+<div id="tCanvas" onclick="oApplication.click(event);return false;" >
 
 </div>
 <div id="menudraw">
@@ -167,7 +169,7 @@ function save(){
 <div id="formEdit"></div>
 </div>
 
-<div style="position:absolute;width:900px;height:800px" id="canvas_tmp" class="canvas" onClick="oApplication.click(event)" onmousemove="oApplication.mousemove(event)"></div>
+<div style="display:none;background:red;opacity: 0.5;position:absolute;width:900px;height:800px" id="canvas_tmp" class="canvas" onClick="oApplication.click(event)" onmousemove="oApplication.mousemove(event)"></div>
 
 <div id="tInfo"></div>
 
@@ -218,10 +220,10 @@ for(var i=0;i< tObject.length;i++){
 	oData.toPosition=tObject[i].toPosition;
 	
 	//oData.type=tObject[i].type;
-	//oData.idLayer=tObject[i].idLayer;
-	oData.build();
+	oData.idLayer=tObject[i].idLayer;
+	//oData.build();
 	
-	oApplication.addLayerObject(1,oData);
+	//oApplication.addLayerObject(tObject[i].idLayer,oData);
 }
 
 <?php if($this->tMenuLayerObject!=''):?>

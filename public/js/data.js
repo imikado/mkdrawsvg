@@ -59,6 +59,8 @@ Data.prototype={
 			}
 		}
 		
+		oApplication.dataIdDrawed=this.id;
+		
 		if(this.type=='carre'){
 			oApplication.tLayer[this.idLayer].drawRect(this.x,this.y,this.width,this.height,this.lineWidth,this.strokeStyle,this.fillStyle);
 			oApplication.tLayer[this.idLayer].fillTextAlign(this.x,this.y+10,this.texte,this.textAlign,this.width,this.height,this.strokeStyleText,this.size);
@@ -78,7 +80,7 @@ Data.prototype={
 			
 			var oFrom=oApplication.getObject(this.from);
 			var oTo=oApplication.getObject(this.to);
-			console.log('build link from:'+this.from+' to:'+this.to);
+			//console.log('build link from:'+this.from+' to:'+this.to);
 			
 			if(!oFrom || !oTo){
 			}else if(this.points!=''){
@@ -88,7 +90,7 @@ Data.prototype={
 					oApplication.tLayer[this.idLayer].linkPoint(oFrom,oTo,this.fromPosition,this.toPosition,this.points,this.strokeStyle,this.lineWidth);
 				}
 			}else{
-				console.log('oFrom et oTo'+oFrom+' '+oTo);
+				//console.log('oFrom et oTo'+oFrom+' '+oTo);
 				oApplication.tLayer[this.idLayer].link(oFrom,oTo,this.fromPosition,this.toPosition,this.strokeStyle,this.lineWidth);
 				
 			}
@@ -106,7 +108,7 @@ Data.prototype={
 			
 		}
 		
-		oApplication.buildLayer(this.idLayer);
+		oApplication.buildLayers();
 	},
 	updateCoord:function(lastX,lastY,x,y){
 		if(this.type=='carre'){
@@ -114,29 +116,30 @@ Data.prototype={
 			this.height=y-lastY;
 			this.x=lastX;
 			this.y=lastY;
-			oApplication.buildLayer(this.idLayer);
+			//oApplication.buildLayer(this.idLayer);
 		}else if(this.type=='bdd'){
 		 
 			this.x=lastX;
 			this.y=lastY;
-			oApplication.buildLayer(this.idLayer);
+			//oApplication.buildLayer(this.idLayer);
 		}else if(this.type=='ligne'){
 			this.x=lastX;
 			this.y=lastY;
 			this.x2=x;
 			this.y2=y;
-			oApplication.buildLayer(this.idLayer);
+			//oApplication.buildLayer(this.idLayer);
 		}else if(this.type=='fleche'){
 			this.x=lastX;
 			this.y=lastY;
 			this.x2=x;
 			this.y2=y;
-			oApplication.buildLayer(this.idLayer);
+			//oApplication.buildLayer(this.idLayer);
 		}else if(this.type=='texte'){
 			this.x=lastX;
 			this.y=lastY;
-			oApplication.buildLayer(this.idLayer);
+			//oApplication.buildLayer(this.idLayer);
 		}
+		oApplication.buildLayers();
 	},
 	
 	getForm:function(){
@@ -353,7 +356,7 @@ Data.prototype={
 						
 						for(var i=0;i<3;i++){
 							for(var j=0;j<3;j++){
-								sHtml+='<input type="radio" onclick="oApplication.updateObject('+this.id+',\'fromPosition\',this.value)" ';
+								sHtml+='<input type="radio" onclick="oApplication.updateObject('+this.id+',\'fromPosition\',this.value);oApplication.updateObject('+this.id+',\'points\',\'\');" ';
 								if(this.fromPosition==tPosition[i][j]){
 									sHtml+='checked="checked"';
 								}
@@ -390,7 +393,7 @@ Data.prototype={
 						
 						for(var i=0;i<3;i++){
 							for(var j=0;j<3;j++){
-								sHtml+='<input type="radio" onclick="oApplication.updateObject('+this.id+',\'toPosition\',this.value)" ';
+								sHtml+='<input type="radio" onclick="oApplication.updateObject('+this.id+',\'toPosition\',this.value);" ';
 								if(this.toPosition==tPosition[i][j]){
 									sHtml+='checked="checked"';
 								}
@@ -459,6 +462,8 @@ Data.prototype={
 			
 		}else{
 		
+			return;
+		
 			var sHtml='';
 			sHtml+='<div id="edit_'+this.id+'" onclick="oApplication.selectObject('+this.id+')"  class="edit" style="left:'+(this.x+10)+'px;top:'+(this.y-5)+'px;">';
 
@@ -480,7 +485,7 @@ Data.prototype={
 
 			var div=getById('bulleInfo_'+this.id);
 			if(!div){
-				console.log('creation div "bulleInfo_'+this.id+'" ');
+				//console.log('creation div "bulleInfo_'+this.id+'" ');
 
 				var sHtml='';
 				sHtml+='<div id="bulleInfo_'+this.id+'" class="bulleInfo" style="left:'+(this.x-5)+'px;top:'+(this.y-5)+'px;">?';
@@ -489,7 +494,7 @@ Data.prototype={
 
 				oApplication.addContent('tInfo',sHtml);
 
-				console.log('sHtml:'+sHtml);
+				//console.log('sHtml:'+sHtml);
 			}else{
 				div.style.top=(this.y-5)+'px';
 				div.style.left=(this.x-5)+'px';

@@ -2,6 +2,10 @@ var oApplication;
 
 
 function Application(){
+	
+	 this.width = 900;
+    this.height = 800;
+	
 	this.idLayer=1;
 	this.idObject=1;
 	this.tLayer=Array();
@@ -12,6 +16,8 @@ function Application(){
 	this.tmpX='';
 	this.tmpY='';
 	
+	this.dataIdDrawed=0;
+	
 	this.tObject=Array();
 	
 	this.tMenuLayer=Array();
@@ -21,10 +27,52 @@ function Application(){
 }
 Application.prototype={
 	
+	clear:function(){
+		var tCanvas=getById('tCanvas');
+		tCanvas.innerHTML='';
+	},
+	
 	load:function(){
 		this.oCanvasTmp=new Canvas('canvas_tmp');
 	},
+	buildLayersTmp:function(){
+		
+		var sSvg='<svg style="position:absolute;" width="'+this.width+'px" height="'+this.height+'px">  ';
+		sSvg+=this.oCanvasTmp.sObject;
+		sSvg+='</svg>';
+		
+		getById('canvas_tmp').innerHTML=sSvg;
+	}
+	,
+	buildLayers:function(){
+		console.log('start buildLayers');
+		this.clear();
+		
+		for(var j=1;j<this.idLayer;j++){
+			console.log('boucle tLayer['+j+' '+this.tLayer[j].visible+' '+this.tLayer[j]);
+			if(!this.tLayer[j].visible){
+				continue;
+			}
+			this.tLayer[j].clear();
+			
+			var iLength=this.tMenuLayerObject[j].length-1;
+			
+			for(var i=iLength;i>=0;i--){
+				var tmpObj=this.getObject(this.tMenuLayerObject[j][i]);
+				if(tmpObj && tmpObj.visible==1){
+					console.log(tmpObj.type);
+					tmpObj.build();
+				}
+			}
+		}
+		console.log('end buildLayers');
+	},
 	buildLayer:function(idLayer){
+		alert('buildLayer');
+		return;
+		if(!oApplication.tLayer[idLayer]){
+			return;
+		}
 		oApplication.tLayer[idLayer].clear();
 		
 		var iLength=this.tMenuLayerObject[idLayer].length-1;
@@ -85,16 +133,14 @@ Application.prototype={
 		this.builListMenuLayerObject(idLayer);
 	},
 	showHideLayer:function(idLayer){
-		var a=getById('checkbox_'+idLayer);
-		if(a){
-			var b=getById('canvas_'+idLayer);
-			
-			if(a.checked){
-				b.style.visibility='visible';
-			}else{
-				b.style.visibility='hidden';
-			}
+		
+		if(this.tLayer[idLayer].visible){
+			this.tLayer[idLayer].visible=0;
+		}else{
+			this.tLayer[idLayer].visible=1;
 		}
+		console.log('showHide layer '+idLayer);
+		this.buildLayers();
 	},
 	showHideObject:function(idObject){
 		var a=getById('checkbox_object_'+idObject);
@@ -107,7 +153,7 @@ Application.prototype={
 				oObject.visible=0;
 			}
 			
-			this.buildLayer(oObject.idLayer);
+			this.buildLayers();
 		}
 		
 	},
@@ -178,7 +224,7 @@ Application.prototype={
 		this.pointIdSelected=idPoint;
 		
 		var oLink=this.getObject(this.idObjectSelected);
-		oApplication.buildLayer(oLink.idLayer);
+		//oApplication.buildLayer(oLink.idLayer);
 		
 		oApplication.clearForm();
 		this.pointIdSelected=idPoint;
@@ -190,7 +236,7 @@ Application.prototype={
 		tPoint[idPoint]='';
 		oLink.points=tPoint.join(';');
 		
-		oApplication.buildLayer(oLink.idLayer);
+		//oApplication.buildLayer(oLink.idLayer);
 		
 		oApplication.clearForm();
 		this.pointIdSelected=idPoint;
@@ -207,10 +253,9 @@ Application.prototype={
 	addLayer:function(){
 		this.addMenuLayer(this.idLayer);
 		
-		var sCanvas='<div class="canvas" id="canvas_'+this.idLayer+'" style="visibility:visible" width="900px" height="800px"></div>';
+		//var sCanvas='<div class="canvas" id="canvas_'+this.idLayer+'" style="visibility:visible" width="900px" height="800px"></div>';
 		
-		this.addContent('tCanvas',sCanvas);
-		
+		//this.addContent('tCanvas',sCanvas);
 		
 		this.tLayer[this.idLayer]=new Canvas('canvas_'+this.idLayer);
 		
@@ -221,7 +266,6 @@ Application.prototype={
 		this.idLayer++;
 	},
 	addMenuLayer:function(idLayer){
-		console.log('layer '+idLayer);
 		
 		var sLayer='<p class="layer" id="layer_'+idLayer+'" >';
 		
@@ -406,7 +450,7 @@ Application.prototype={
 			this.addMenuLayerObject(tmpObject.idLayer,tmpObject,i,iLength);
 		}
 		
-		this.buildLayer(idLayer);
+		//this.buildLayer(idLayer);
 
 	},
 	addContent:function(id,sText){
@@ -440,10 +484,13 @@ Application.prototype={
 		var iWidth=(x-this.tmpX);
 		var iHeight=(y-this.tmpY);
 		
+		console.log('move');
+		
 		
 		if(this.processing){
-			this.clearCanvasTmp();
+			this.oCanvasTmp.clear();
 			if(this.drawType=='carre'){
+				console.log('carre');
 				this.oCanvasTmp.drawRectStroke(this.tmpX,this.tmpY,iWidth,iHeight,'green');
 			}else if(this.drawType=='ligne'){
 				this.oCanvasTmp.line(this.tmpX,this.tmpY,x,y,'green',2);
@@ -453,13 +500,19 @@ Application.prototype={
 				this.oCanvasTmp.drawBdd(this.tmpX,this.tmpY,iWidth,iHeight,1,'green','#fff');
 			}else if(this.drawType=='losange'){
 				this.oCanvasTmp.drawLosange(this.tmpX,this.tmpY,iWidth,iHeight,1,'green','#fff');
+			}else{
+				console.log('pas connu');
 			}
 			
+			this.buildLayersTmp();
 			
 		}
 	},
 	clearCanvasTmp:function(){
 		this.oCanvasTmp.clear();
+		
+		getById('canvas_tmp').style.display='none';
+		
 	},
 	getXmouse:function(e){
 		if(e && e.x!=null && e.y!=null){
@@ -494,7 +547,7 @@ Application.prototype={
 				
 				var tmpSelectedPointId=this.pointIdSelected;
 				
-				oApplication.buildLayer(oLink.idLayer);
+				//oApplication.buildLayer(oLink.idLayer);
 				oApplication.clearForm();
 				this.pointIdSelected=tmpSelectedPointId;
 				oApplication.loadForm(oLink.id);
@@ -513,14 +566,17 @@ Application.prototype={
 					var oCarre=this.getObject(this.idObjectSelected);
 					oCarre.x=x
 					oCarre.y=y;
-					oApplication.buildLayer(oCarre.idLayer);
+					
+					//oApplication.buildLayer(oCarre.idLayer);
 					
 					oApplication.clearForm();
 					oApplication.loadForm(oCarre.id);
 					
-					oCarre.enableEdit();
+					//oCarre.enableEdit();
 					
 					this.clearCanvasTmp();
+				
+					this.buildLayers();
 				
 					this.clearType();
 					return;
@@ -711,6 +767,8 @@ Application.prototype={
 		this.clearType();
 		
 		this.drawType=sType;
+		
+		getById('canvas_tmp').style.display='block';
 		
 		var a=getById('btn_'+this.drawType);
 		if(a){
