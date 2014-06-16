@@ -59,6 +59,16 @@ class module_default extends abstract_module{
 		_root::redirect('default::schema',array('id'=>$oSchema->id));
 	}
 	
+	public function _export(){
+		_root::setConfigVar('site.mode','prod');
+		
+		$this->oLayout->setLayout('download');
+		$this->oLayout->sFileName='export.svg';
+		$this->oLayout->sExtension='svg';
+		
+		$this->oLayout->content=$_POST['content'];
+	}
+	
 	public function after(){
 		$this->oLayout->show();
 	}

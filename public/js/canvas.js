@@ -260,7 +260,7 @@ Canvas.prototype={
 	,
 	drawRect : function(x,y,ilargeur,ihauteur,lineWidth,strokeStyle,fillStyle){
 
-		var sSvg='<rect onclick="oApplication.selectObject('+oApplication.dataIdDrawed+');return false;" class="chartRect" id="rect'+x+''+y+'" x="'+x+'" y="'+y+'" width="'+ilargeur+'" height="'+ihauteur+'" style="cursor:pointer;fill:'+fillStyle+';stroke-width:'+lineWidth+';stroke:'+strokeStyle+'"></rect>';
+		var sSvg='<rect onMouseDown="oApplication.startDrag('+oApplication.dataIdDrawed+');oApplication.selectObject('+oApplication.dataIdDrawed+')" onMouseUp="oApplication.endDrag()" class="chartRect" id="obj'+oApplication.dataIdDrawed+'" x="'+x+'" y="'+y+'" width="'+ilargeur+'" height="'+ihauteur+'" style="cursor:pointer;fill:'+fillStyle+';stroke-width:'+lineWidth+';stroke:'+strokeStyle+'"></rect>';
 			
 		this.addObject(sSvg);
 
@@ -268,7 +268,7 @@ Canvas.prototype={
 	},
 	fillRect : function(x,y,ilargeur,ihauteur,fond){
 
-		var sSvg='<rect onclick="oApplication.selectObject('+oApplication.dataIdDrawed+');return false;" class="chartRect" id="rect'+x+''+y+'" x="'+x+'" y="'+y+'" width="'+ilargeur+'" height="'+ihauteur+'" style="cursor:pointer;fill:'+fond+'"></rect>';
+		var sSvg='<rect onMouseDown="oApplication.startDrag('+oApplication.dataIdDrawed+');oApplication.selectObject('+oApplication.dataIdDrawed+')" onMouseUp="oApplication.endDrag()" class="chartRect" id="rect'+x+''+y+'" x="'+x+'" y="'+y+'" width="'+ilargeur+'" height="'+ihauteur+'" style="cursor:pointer;fill:'+fond+'"></rect>';
 			
 		this.addObject(sSvg);
 
@@ -312,7 +312,7 @@ Canvas.prototype={
 	drawBdd:function(x,y,ilargeur,ihauteur,lineWidth,strokeStyle,fillStyle){
 		
 		
-		var sSvg='<g onclick="oApplication.selectObject('+oApplication.dataIdDrawed+')" style="cursor:pointer;">'; 
+		var sSvg='<g onMouseDown="oApplication.startDrag('+oApplication.dataIdDrawed+');oApplication.selectObject('+oApplication.dataIdDrawed+')" onMouseUp="oApplication.endDrag()" style="cursor:pointer;">'; 
 		sSvg+='<rect id="rect'+x+''+y+'" x="'+x+'" y="'+y+'" width="'+ilargeur+'" height="'+ihauteur+'" style="fill:'+fillStyle+';stroke-width:'+lineWidth+';stroke:'+strokeStyle+'"></rect>';
 		sSvg+='<ellipse cx="'+(x+(ilargeur/2))+'" cy="'+y+'" rx="'+ilargeur/2+'" ry="10" style="fill:'+fillStyle+';stroke:'+strokeStyle+';stroke-width:'+lineWidth+'" />';
 		sSvg+='<ellipse cx="'+(x+(ilargeur/2))+'" cy="'+(y+ihauteur)+'" rx="'+ilargeur/2+'" ry="10" style="fill:'+fillStyle+';stroke:'+strokeStyle+';stroke-width:'+lineWidth+'" />';

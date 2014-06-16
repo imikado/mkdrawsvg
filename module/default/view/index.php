@@ -115,6 +115,18 @@ width:50px;
 }
 </style>
 <script>
+function exportPicture(){
+	var oSvg=getById('tCanvas');
+	sSvg=oSvg.innerHTML;
+	
+	var oContent=getById('content');
+	oContent.value=sSvg;
+	
+	var oForm=getById('formexport');
+	if(oForm){
+		oForm.submit();
+	}
+}
 function loadSave(){
 	var stObject=JSON.stringify( oApplication.tObject); 
 	
@@ -142,7 +154,7 @@ function save(){
 	}
 }
 </script>
-<div id="tCanvas" onclick="oApplication.click(event);return false;" >
+<div id="tCanvas" onmousemove="oApplication.mousemove(event)" >
 
 </div>
 <div id="menudraw">
@@ -165,7 +177,7 @@ function save(){
 
 </div>
 	<div style="clear:both"></div>
-	<p><input onclick="oApplication.addLayer()" type="button" value="Add layer"/> <input type="button" value="save" onclick="save()"/></p>
+	<p><input onclick="oApplication.addLayer()" type="button" value="Add layer"/> <input type="button" value="save" onclick="save()"/>  <input type="button" value="Export" onclick="exportPicture()"/> </p>
 <div id="formEdit"></div>
 </div>
 
@@ -247,5 +259,9 @@ loadSave();
 	<textarea name="tObject" id="tObject"></textarea>
 	<textarea name="tMenuLayerObject" id="tMenuLayerObject"></textarea>
 	
+</form>
+
+<form target="_blank" id="formexport" action="<?php echo _root::getLink('default::export')?>" method="POST">
+<textarea id="content" name="content"></textarea>
 </form>
 </div>

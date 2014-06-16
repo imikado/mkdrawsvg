@@ -24,8 +24,21 @@ function Application(){
 	this.tMenuLayerObject=Array();
 	
 	this.pointIdSelected='';
+	
+	this.dragId=null;
+	
 }
 Application.prototype={
+	
+	startDrag:function(id){
+		//console.log('start drag' + id);
+		this.dragId=id;
+		
+	},
+	endDrag:function(id){
+		console.log('end drag' + id);
+		this.dragId=null;
+	},
 	
 	clear:function(){
 		var tCanvas=getById('tCanvas');
@@ -483,6 +496,16 @@ Application.prototype={
 		
 		var iWidth=(x-this.tmpX);
 		var iHeight=(y-this.tmpY);
+		
+		if(this.dragId){
+
+
+			oApplication.updateObject(this.dragId,'x',x-40);
+			oApplication.updateObject(this.dragId,'y',y-40);
+			
+			
+			return;
+		}
 		
 		console.log('move');
 		
